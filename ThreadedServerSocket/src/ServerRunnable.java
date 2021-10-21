@@ -5,6 +5,7 @@ import static java.lang.System.out;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class ServerRunnable implements Runnable {
 
@@ -18,7 +19,7 @@ public class ServerRunnable implements Runnable {
 	public ServerRunnable(Socket clientSocket) {
 		ServerRunnable.clientSocket = clientSocket;
 	}
-
+	
 	@Override
 	public void run() {
 		out.println("Ein Client hat sich verbunden");
@@ -29,18 +30,39 @@ public class ServerRunnable implements Runnable {
 			is = clientSocket.getInputStream();
 			os = clientSocket.getOutputStream();
 
-			os.write(" Willkommen\nWas ist 5+5?".getBytes());
+			int randomNum1 = ThreadLocalRandom.current().nextInt(0, 501);
+			int randomNum2 = ThreadLocalRandom.current().nextInt(0, 501);
+			int randomSym = ThreadLocalRandom.current().nextInt(1, 5);
+			int symbol = 43;
+			int result = 0;
+			switch (randomSym) {
+			case 1:
+				symbol = 43;
+				result = randomNum1 + randomNum2;
+				break;
+			case 2:
+				symbol = 45;
+				result = randomNum1 - randomNum2;
+				break;
+			case 3:
+				symbol = 42;
+				result = randomNum1 * randomNum2;
+				break;
+			case 4:
+				symbol = 47;
+				result = randomNum1 / randomNum2;
+				break;
+			}
+
+			String ausgabe = " Willkommen\nWas ist " + randomNum1 + " " + (char)symbol + " " + randomNum2 + "?";
+			os.write(ausgabe.getBytes());
 			os.flush();
 			read = is.read(buffer);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 
-		int eingabe = Integer.valueOf(new String(buffer, 0, read));
-		out.println("Eingabe: " + eingabe);
+			int eingabe = Integer.valueOf(new String(buffer, 0, read));
+			out.println("Eingabe: " + eingabe);
 
-		try {
-			if (eingabe == 10) {
+			if (eingabe == result) {
 				out.println("Eingabe war Richtig");
 				os.write("Richtig!".getBytes());
 			} else {
