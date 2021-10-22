@@ -6,13 +6,18 @@ import static java.lang.System.out;
 import java.io.*;
 import java.net.Socket;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 public class ServerRunnable implements Runnable {
 
 	private static Socket clientSocket;
 
-	private static InputStream is;
-	private static OutputStream os;
+	private static FileInputStream in;
+	private static FileOutputStream outp;
+	private static ObjectOutputStream os;
+	private static ObjectInputStream is;
+	
+	private static ServerChallengeInfo info;
 
 	private static byte[] buffer = new byte[1024];
 
@@ -20,16 +25,33 @@ public class ServerRunnable implements Runnable {
 		ServerRunnable.clientSocket = clientSocket;
 	}
 	
+	private void sendMessage (String output) throws IOException {
+		info.setString(output);
+		os.writeObject(info);
+	}
+	
+	private static String receiveMessage () throws Exception, IOException, ClassNotFoundException {
+		TimeUnit.MILLISECONDS.sleep(500);
+		info = (ServerChallengeInfo) is.readObject();
+		return info.getString();
+	}
+
+
 	@Override
 	public void run() {
 		out.println("Ein Client hat sich verbunden");
-
 		int read = 0;
-
 		try {
-			is = clientSocket.getInputStream();
-			os = clientSocket.getOutputStream();
-
+			info = new ServerChallengeInfo();
+			
+			outp = new FileOutputStream("../challengeInfoOut.ser");
+			os = new ObjectOutputStream(outp);
+			
+			TimeUnit.MILLISECONDS.sleep(100);
+			
+			in = new FileInputStream("../challengeInfoIn.ser");
+			is = new ObjectInputStream(in);
+			
 			int randomNum1 = ThreadLocalRandom.current().nextInt(0, 501);
 			int randomNum2 = ThreadLocalRandom.current().nextInt(0, 501);
 			int randomSym = ThreadLocalRandom.current().nextInt(1, 5);
@@ -54,25 +76,23 @@ public class ServerRunnable implements Runnable {
 				break;
 			}
 
-			String ausgabe = " Willkommen\nWas ist " + randomNum1 + " " + (char)symbol + " " + randomNum2 + "?";
-			os.write(ausgabe.getBytes());
-			os.flush();
-			read = is.read(buffer);
-
-			int eingabe = Integer.valueOf(new String(buffer, 0, read));
+			sendMessage(" Willkommen\nWas ist " + randomNum1 + " " + (char) symbol + " " + randomNum2 + "?");
+			
+			while(in.available() == 0);
+			int eingabe = Integer.valueOf(receiveMessage());
+			
 			out.println("Eingabe: " + eingabe);
 
 			if (eingabe == result) {
 				out.println("Eingabe war Richtig");
-				os.write("Richtig!".getBytes());
+				sendMessage("Richtig");
 			} else {
 				out.println("Eingabe war Falsch");
-				os.write("Falsch!".getBytes());
+				sendMessage("Falsch");
 			}
-
-			os.flush();
 			clientSocket.close();
-		} catch (IOException e) {
+			
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
