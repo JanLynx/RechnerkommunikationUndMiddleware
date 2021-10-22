@@ -2,12 +2,19 @@ import java.io.Serializable;
 
 public class ServerChallengeInfo implements Serializable {
 	
-	private String handler;
+	private double solution;
+	private String challenge;
 
-	public void setString(String handler) {
-		this.handler = handler;
+	public void setSolution (double solution) {
+		this.solution = solution;
 	}
-	public String getString() {
-		return handler;
+	public double getSolution() {
+		return solution;
+	}
+	public void setChallenge (String challenge) {
+		this.challenge = challenge;
+	}
+	public String getChallenge() {
+		return challenge;
 	}
 }

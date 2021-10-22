@@ -1,62 +1,49 @@
 //Name: Jan Schönitz m26336
-//Datum: 16.10.2021
+//Datum: 22.10.2021
 
 import static java.lang.System.out;
 
 import java.io.*;
 import java.net.Socket;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 
 public class ServerRunnable implements Runnable {
 
 	private static Socket clientSocket;
 
-	private static FileInputStream in;
-	private static FileOutputStream outp;
 	private static ObjectOutputStream os;
 	private static ObjectInputStream is;
 	
 	private static ServerChallengeInfo info;
-
-	private static byte[] buffer = new byte[1024];
 
 	public ServerRunnable(Socket clientSocket) {
 		ServerRunnable.clientSocket = clientSocket;
 	}
 	
 	private void sendMessage (String output) throws IOException {
-		info.setString(output);
-		os.writeObject(info);
+		 info.setChallenge(output);
+		 os = new ObjectOutputStream(clientSocket.getOutputStream());
+		 os.writeObject(info);
+		 os.flush();
 	}
 	
-	private static String receiveMessage () throws Exception, IOException, ClassNotFoundException {
-		TimeUnit.MILLISECONDS.sleep(500);
-		info = (ServerChallengeInfo) is.readObject();
-		return info.getString();
+	private static void receiveMessage () throws Exception, IOException, ClassNotFoundException {
+		is = new ObjectInputStream(clientSocket.getInputStream());
+        info = (ServerChallengeInfo) is.readObject();
 	}
 
 
 	@Override
 	public void run() {
 		out.println("Ein Client hat sich verbunden");
-		int read = 0;
 		try {
 			info = new ServerChallengeInfo();
-			
-			outp = new FileOutputStream("../challengeInfoOut.ser");
-			os = new ObjectOutputStream(outp);
-			
-			TimeUnit.MILLISECONDS.sleep(100);
-			
-			in = new FileInputStream("../challengeInfoIn.ser");
-			is = new ObjectInputStream(in);
 			
 			int randomNum1 = ThreadLocalRandom.current().nextInt(0, 501);
 			int randomNum2 = ThreadLocalRandom.current().nextInt(0, 501);
 			int randomSym = ThreadLocalRandom.current().nextInt(1, 5);
 			int symbol = 43;
-			int result = 0;
+			double result = 0;
 			switch (randomSym) {
 			case 1:
 				symbol = 43;
@@ -75,15 +62,11 @@ public class ServerRunnable implements Runnable {
 				result = randomNum1 / randomNum2;
 				break;
 			}
-
+			
 			sendMessage(" Willkommen\nWas ist " + randomNum1 + " " + (char) symbol + " " + randomNum2 + "?");
+			receiveMessage();
 			
-			while(in.available() == 0);
-			int eingabe = Integer.valueOf(receiveMessage());
-			
-			out.println("Eingabe: " + eingabe);
-
-			if (eingabe == result) {
+			if (info.getSolution() == result) {
 				out.println("Eingabe war Richtig");
 				sendMessage("Richtig");
 			} else {
