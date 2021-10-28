@@ -24,8 +24,7 @@ public class ServerRunnable implements Runnable {
 		ServerRunnable.clientSocket = clientSocket;
 	}
 	
-	private void sendMessage (String output) throws IOException {
-		 comm.setMessage(output);
+	private void sendMessage () throws IOException {
 		 os = new ObjectOutputStream(clientSocket.getOutputStream());
 		 os.writeObject(comm);
 		 os.flush();
@@ -36,7 +35,9 @@ public class ServerRunnable implements Runnable {
         comm = (ServerCommunication) is.readObject();
 	}
 	
-	public void buildingHash() {
+	public void buildHash() {
+		map = new HashMap<String, String>();
+		
 		map.put("krank", "Geh lieber zu einem Arzt!");
 		map.put("gut", "Das ist aber schön!");
 		map.put("ok", "Was? Nur \"ok\"?");
@@ -69,14 +70,12 @@ public class ServerRunnable implements Runnable {
 //
 //		return inputArr;
 //	}
-
-	public String getAnswer() throws Exception {
-
-		String[] eingabeArr = splitInputString();
+	
+	public String generateAnswer(String[] input) throws Exception {
 
 		for (Entry<String, String> entry : map.entrySet()) {
-			for (int i = 0; i < eingabeArr.length; i++) {
-				if (eingabeArr[i].equals(entry.getKey())) {
+			for (int i = 0; i < input.length; i++) {
+				if (input[i].equals(entry.getKey())) {
 					return entry.getValue();
 				}
 			}
@@ -93,23 +92,29 @@ public class ServerRunnable implements Runnable {
 		try {
 			comm = new ServerCommunication();
 
-			sendMessage("Hallo, hier ist Eliza. Mit wem habe ich das Vergnügen?");
+			comm.setMessage("Hallo, hier ist Eliza. Mit wem habe ich das Vergnügen?");
+			sendMessage();
 
-			// user begrüßen
 			receiveMessage();
-			String username = comm.getUsername();
-			String ausgabe = "Hallo " + username + ", wie geht es dir?";
-			sendMessage(ausgabe);
+			String username = comm.getName();
+			String output = "Hallo " + username + ", wie geht es dir?";
+			
+			// greet user
+			comm.setMessage(output);
+			sendMessage();
 
-			map = new HashMap<String, String>();
-			buildingHash();
+			//receive answerarry
+			receiveMessage();
+			buildHash();
+			output = generateAnswer(comm.getFeelings());
+			
+			// send answer
+			comm.setAnswer(output);
+			sendMessage();
 
-			ausgabe = getAnswer();
-
-			sendMessage(ausgabe);
-
-			ausgabe = "Tschüss " + username;
-			sendMessage(ausgabe);
+			output = "Tschüss " + username;
+			comm.setMessage(output);
+			sendMessage();
 
 			clientSocket.close();
 

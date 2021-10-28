@@ -1,26 +1,23 @@
-import static java.lang.System.out;
-
 import java.io.Serializable;
 
 public class ServerCommunication implements Serializable {
 	
 	private String message;
 	private String name;
-	private String feelings;
+	private String[] feelings;
+	private String answer;
 	
-	public String[] splitInputString() {
+	public String[] splitString(String input) {
 
-		String input = comm.getMessage();
-		out.println("Eingabe: " + input);
 		String[] inputArr = input.split(" ");
 
 		return inputArr;
 	}
 	
-	public String getUsername() throws Exception {
+	public String getUsername(String input) throws Exception {
 
 		String username = "";
-		String[] usernameArr = splitInputString();
+		String[] usernameArr = splitString(input);
 
 		if (usernameArr.length == 1) {
 			username = usernameArr[0];
@@ -32,6 +29,7 @@ public class ServerCommunication implements Serializable {
 
 	}
 
+
 	public void setMessage (String message) {
 		this.message = message;
 	}
@@ -39,17 +37,25 @@ public class ServerCommunication implements Serializable {
 		return message;
 	}
 	
-	public void setName (String name) {
-		this.name = name;
+	public void setNameFromString (String input) throws Exception {
+		this.name = getUsername(input);
 	}
 	public String getName() {
 		return name;
 	}
 	
-	public void setFeelings (String feelings) {
-		this.feelings = feelings;
+	public void setAnswer (String answer) throws Exception {
+		this.answer = answer;
 	}
-	public String getFeelings() {
+	public String getAnswer() {
+		return answer;
+	}
+	
+	public void setFeelings (String feelings) throws Exception {
+		this.feelings = splitString(feelings);
+	}
+	public String[] getFeelings() {
 		return feelings;
 	}
 }
+
