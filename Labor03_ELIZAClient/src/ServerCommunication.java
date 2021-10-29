@@ -25,7 +25,7 @@ public class ServerCommunication implements Serializable {
 			username = usernameArr[usernameArr.length - 1];
 		}
 
-		return username;
+		return username = username.replace(".", "");
 
 	}
 

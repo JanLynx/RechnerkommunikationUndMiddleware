@@ -15,29 +15,29 @@ public class ServerRunnable implements Runnable {
 
 	private static ObjectOutputStream os;
 	private static ObjectInputStream is;
-	
+
 	private static ServerCommunication comm;
-	
+
 	private static HashMap<String, String> map;
 
 	public ServerRunnable(Socket clientSocket) {
 		ServerRunnable.clientSocket = clientSocket;
 	}
-	
-	private void sendMessage () throws IOException {
-		 os = new ObjectOutputStream(clientSocket.getOutputStream());
-		 os.writeObject(comm);
-		 os.flush();
+
+	private void sendMessage() throws IOException {
+		os = new ObjectOutputStream(clientSocket.getOutputStream());
+		os.writeObject(comm);
+		os.flush();
 	}
-	
-	private static void receiveMessage () throws Exception, IOException, ClassNotFoundException {
+
+	private static void receiveMessage() throws Exception, IOException, ClassNotFoundException {
 		is = new ObjectInputStream(clientSocket.getInputStream());
-        comm = (ServerCommunication) is.readObject();
+		comm = (ServerCommunication) is.readObject();
 	}
-	
+
 	public void buildHash() {
 		map = new HashMap<String, String>();
-		
+
 		map.put("krank", "Geh lieber zu einem Arzt!");
 		map.put("gut", "Das ist aber schön!");
 		map.put("ok", "Was? Nur \"ok\"?");
@@ -46,35 +46,10 @@ public class ServerRunnable implements Runnable {
 		map.put("nicht", "Schade!");
 	}
 
-//	public String getUsername() throws Exception {
-//
-//		String username = "";
-//		String[] usernameArr = splitInputString();
-//
-//		if (usernameArr.length == 1) {
-//			username = usernameArr[0];
-//		} else {
-//			username = usernameArr[usernameArr.length - 1];
-//		}
-//
-//		return username;
-//
-//	}
-
-//	public String[] splitInputString() throws Exception {
-//
-//		receiveMessage();
-//		String input = comm.getMessage();
-//		out.println("Eingabe: " + input);
-//		String[] inputArr = input.split(" ");
-//
-//		return inputArr;
-//	}
-	
 	public String generateAnswer(String[] input) throws Exception {
-
 		for (Entry<String, String> entry : map.entrySet()) {
 			for (int i = 0; i < input.length; i++) {
+				input[i] = input[i].replace(".", ""); // replace unnecessary full stops
 				if (input[i].equals(entry.getKey())) {
 					return entry.getValue();
 				}
@@ -83,7 +58,6 @@ public class ServerRunnable implements Runnable {
 
 		return "Leider kann ich dir nicht weiterhelfen, probiers doch einfach später nocheinmal.";
 	}
-
 
 	@Override
 	public void run() {
@@ -98,16 +72,16 @@ public class ServerRunnable implements Runnable {
 			receiveMessage();
 			String username = comm.getName();
 			String output = "Hallo " + username + ", wie geht es dir?";
-			
+
 			// greet user
 			comm.setMessage(output);
 			sendMessage();
 
-			//receive answerarry
+			// receive answerarry
 			receiveMessage();
 			buildHash();
 			output = generateAnswer(comm.getFeelings());
-			
+
 			// send answer
 			comm.setAnswer(output);
 			sendMessage();

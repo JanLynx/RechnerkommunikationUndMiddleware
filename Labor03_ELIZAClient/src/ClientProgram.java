@@ -23,8 +23,6 @@ public class ClientProgram {
 	private static void sendMessage() throws IOException {
 		os = new ObjectOutputStream(clientSocket.getOutputStream());
 		os.writeObject(comm);
-		System.out.println("Hallo");
-
 		os.flush();
 	}
 
