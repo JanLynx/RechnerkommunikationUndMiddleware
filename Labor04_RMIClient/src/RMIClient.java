@@ -19,12 +19,25 @@ public class RMIClient {
 		    }
 			out.println("Client started...");
 			rmiObject = (RMIInterface)Naming.lookup("rmi://localhost:5000/RMIServer");
+			
+			scanner = new Scanner(System.in);
+			out.println("Wählen Sie die Methode, welche Sie entfernt aufrufen möchten:\n1 Textanalyse\n2 Exponetielle Berechnung von x");
+			int methodNumber = scanner.nextInt();
+			
+			if( methodNumber == 1) {
+				rmiResult = rmiObject.calculateE(scanner.nextDouble());
+				out.println("RMI-Nachricht: " + rmiResult);
+			} else if (methodNumber == 2) {
+				
+			}else {
+				out.println("Bitte eine valide Zahl eingeben!");
+			}
+			
 			rmiMessage = rmiObject.sayHello();
 			out.println("RMI-Nachricht: " + rmiMessage);
 			
-			scanner = new Scanner(System.in);
-			rmiResult = rmiObject.calculateE(scanner.nextDouble());
-			out.println("RMI-Nachricht: " + rmiResult);
+			
+			
 		}catch(Exception e){
 			 out.println(e.getMessage());			 
 		}	
