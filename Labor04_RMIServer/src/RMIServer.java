@@ -19,4 +19,30 @@ public class RMIServer extends UnicastRemoteObject implements RMIInterface {
 		return Math.pow(2.718281828, value);
 	}
 
+	@Override
+	public String analyseInput(String input) throws RemoteException {
+		int charCounter = 0;
+		int wordCounter = 0;
+		int eCounter = 0;
+		
+		//Counting Chars
+        for(int i = 0; i < input.length(); i++) {    
+            if(input.charAt(i) != ' ')    
+                charCounter++;    
+        }
+        
+        //Counting Words
+        String[] words = input.split("\\s+");
+        wordCounter = words.length;
+        
+        //Counting "e"
+        for(int i = 0; i < input.length(); i++) {    
+            if(input.charAt(i) == 'e')    
+                eCounter++;   
+        }
+		
+        String message = "Zeichenzahl: " + charCounter + "\nWörterzahl: " + wordCounter +"\nAnzahl von \"e\": " + eCounter;
+		return message;
+	}
+
 }

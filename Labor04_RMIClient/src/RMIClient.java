@@ -28,15 +28,11 @@ public class RMIClient {
 				rmiResult = rmiObject.calculateE(scanner.nextDouble());
 				out.println("RMI-Nachricht: " + rmiResult);
 			} else if (methodNumber == 2) {
-				
+				rmiMessage = rmiObject.analyseInput("Testtext zum testen");
+				out.println("RMI-Nachricht: " + rmiMessage);
 			}else {
 				out.println("Bitte eine valide Zahl eingeben!");
-			}
-			
-			rmiMessage = rmiObject.sayHello();
-			out.println("RMI-Nachricht: " + rmiMessage);
-			
-			
+			}	
 			
 		}catch(Exception e){
 			 out.println(e.getMessage());			 
