@@ -40,8 +40,10 @@ public class RMIServer extends UnicastRemoteObject implements RMIInterface {
             if(input.charAt(i) == 'e')    
                 eCounter++;   
         }
+        
+        String message = charCounter + "," + wordCounter + "," + eCounter; //CSV
 		
-        String message = "Zeichenzahl (ohne Carriage Return und Line Feed): " + charCounter + "\nWörterzahl: " + wordCounter +"\nAnzahl von \"e\": " + eCounter;
+        //String message = "Zeichenzahl (ohne Carriage Return und Line Feed): " + charCounter + "\nWörterzahl: " + wordCounter +"\nAnzahl von \"e\": " + eCounter;
 		return message;
 	}
 

@@ -27,14 +27,23 @@ public class RMIClient {
 			scanner = new Scanner(System.in);
 			out.println("Wählen Sie die Methode, welche Sie entfernt aufrufen möchten:\n1 Textanalyse\n2 Exponetielle Berechnung von x");
 			int methodNumber = scanner.nextInt();
+			out.println("Ihre Menüwahl: " + methodNumber);
 			
 			if( methodNumber == 1) {
-				out.println("Geben Sie den Dateinamen der Textdatei an: ");
+				int charCounter = 0;
+				int wordCounter = 0;
+				int eCounter = 0;
+				
+				out.print("Geben Sie den Dateinamen der Textdatei an: ");
 				String filename = scanner.next();
-				String text = Files.readString(Path.of(filename));
-				rmiMessage = rmiObject.analyzeInput(text);
-				out.println("RMI-Nachricht: " + rmiMessage);
+				String text = Files.readString(Path.of(filename));				
+				String[] parts = rmiObject.analyzeInput(text).split(",");
+				charCounter = Integer.parseInt(parts[0]);
+				wordCounter = Integer.parseInt(parts[1]);
+				eCounter = Integer.parseInt(parts[2]);
+				out.println("Zeichenzahl (ohne Carriage Return und Line Feed): " + charCounter + "\nWörterzahl: " + wordCounter +"\nAnzahl von \"e\": " + eCounter);
 			} else if (methodNumber == 2) {
+				out.print("Welche Zahl möchten Sie als Exponent einsetzen?:");
 				rmiResult = rmiObject.calculateE(scanner.nextDouble());
 				out.println("RMI-Nachricht: " + rmiResult);
 			}else {
