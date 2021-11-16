@@ -5,6 +5,10 @@ import java.util.Scanner;
 
 import static java.lang.System.out;
 
+import java.io.FileInputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 public class RMIClient {
 
 	public static void main(String[] args) {
@@ -25,11 +29,14 @@ public class RMIClient {
 			int methodNumber = scanner.nextInt();
 			
 			if( methodNumber == 1) {
+				out.println("Geben Sie den Dateinamen der Textdatei an: ");
+				String filename = scanner.next();
+				String text = Files.readString(Path.of(filename));
+				rmiMessage = rmiObject.analyzeInput(text);
+				out.println("RMI-Nachricht: " + rmiMessage);
+			} else if (methodNumber == 2) {
 				rmiResult = rmiObject.calculateE(scanner.nextDouble());
 				out.println("RMI-Nachricht: " + rmiResult);
-			} else if (methodNumber == 2) {
-				rmiMessage = rmiObject.analyseInput("Testtext zum testen");
-				out.println("RMI-Nachricht: " + rmiMessage);
 			}else {
 				out.println("Bitte eine valide Zahl eingeben!");
 			}	

@@ -20,14 +20,14 @@ public class RMIServer extends UnicastRemoteObject implements RMIInterface {
 	}
 
 	@Override
-	public String analyseInput(String input) throws RemoteException {
+	public String analyzeInput(String input) throws RemoteException {
 		int charCounter = 0;
 		int wordCounter = 0;
 		int eCounter = 0;
 		
 		//Counting Chars
         for(int i = 0; i < input.length(); i++) {    
-            if(input.charAt(i) != ' ')    
+            if(input.charAt(i) > 30)    
                 charCounter++;    
         }
         
@@ -41,7 +41,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIInterface {
                 eCounter++;   
         }
 		
-        String message = "Zeichenzahl: " + charCounter + "\nWörterzahl: " + wordCounter +"\nAnzahl von \"e\": " + eCounter;
+        String message = "Zeichenzahl (ohne Carriage Return und Line Feed): " + charCounter + "\nWörterzahl: " + wordCounter +"\nAnzahl von \"e\": " + eCounter;
 		return message;
 	}
 

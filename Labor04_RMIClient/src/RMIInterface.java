@@ -5,5 +5,5 @@ public interface RMIInterface extends Remote   {
 
 	public double calculateE(double value) throws RemoteException;
 	
-	public String analyseInput(String input) throws RemoteException;
+	public String analyzeInput(String input) throws RemoteException;
 }
