@@ -36,11 +36,19 @@ public class RMIClient {
 				
 				out.print("Geben Sie den Dateinamen der Textdatei an: ");
 				String filename = scanner.next();
-				String text = Files.readString(Path.of(filename));				
-				String[] parts = rmiObject.analyzeInput(text).split(",");
-				charCounter = Integer.parseInt(parts[0]);
-				wordCounter = Integer.parseInt(parts[1]);
-				eCounter = Integer.parseInt(parts[2]);
+				String text = Files.readString(Path.of(filename));	
+				
+				DOMBuilder builder = new DOMBuilder();
+				builder.parseDocument(rmiObject.analyzeInput(text));
+				
+				charCounter = Integer.parseInt(builder.getCharCounter());
+				wordCounter = Integer.parseInt(builder.getWordCounter());
+				eCounter = Integer.parseInt(builder.getECounter());
+				
+//				String[] parts = rmiObject.analyzeInput(text).split(",");
+//				charCounter = Integer.parseInt(parts[0]);
+//				wordCounter = Integer.parseInt(parts[1]);
+//				eCounter = Integer.parseInt(parts[2]);
 				out.println("Zeichenzahl (ohne Carriage Return und Line Feed): " + charCounter + "\nWörterzahl: " + wordCounter +"\nAnzahl von \"e\": " + eCounter);
 			} else if (methodNumber == 2) {
 				out.print("Welche Zahl möchten Sie als Exponent einsetzen?:");

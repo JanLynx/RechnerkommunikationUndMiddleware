@@ -1,6 +1,8 @@
 import java.rmi.*;
 import java.rmi.server.*;
 
+import org.w3c.dom.Document;
+
 public class RMIServer extends UnicastRemoteObject implements RMIInterface {
 			
 	private static final long serialVersionUID = 1L;
@@ -20,10 +22,12 @@ public class RMIServer extends UnicastRemoteObject implements RMIInterface {
 	}
 
 	@Override
-	public String analyzeInput(String input) throws RemoteException {
+	public Document analyzeInput(String input) throws RemoteException {
 		int charCounter = 0;
 		int wordCounter = 0;
 		int eCounter = 0;
+		
+		DOMBuilder builder = new DOMBuilder();
 		
 		//Counting Chars
         for(int i = 0; i < input.length(); i++) {    
@@ -41,10 +45,12 @@ public class RMIServer extends UnicastRemoteObject implements RMIInterface {
                 eCounter++;   
         }
         
+        Document doc = builder.buildDocument(Integer.toString(charCounter), Integer.toString(wordCounter), Integer.toString(eCounter));
+        
         String message = charCounter + "," + wordCounter + "," + eCounter; //CSV
 		
         //String message = "Zeichenzahl (ohne Carriage Return und Line Feed): " + charCounter + "\nWörterzahl: " + wordCounter +"\nAnzahl von \"e\": " + eCounter;
-		return message;
+		return doc;
 	}
 
 }
