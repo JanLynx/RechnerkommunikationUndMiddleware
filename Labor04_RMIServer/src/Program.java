@@ -1,3 +1,6 @@
+//Name: Jan Schönitz m26336
+//Datum: 18.11.2021
+
 import static java.lang.System.out;
 
 import java.rmi.*;
